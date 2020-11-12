@@ -12,15 +12,9 @@ namespace fs = std::experimental::filesystem;
 class SourceAccess {
     public:
 
-        void Open(std::string fileName = "SaveData.txt");
-
-        void Save() const;
-
-        void SetValue(std::string dataId, std::string dataValue);
+        int Open(std::string fileName);
 
         std::string GetValue(std::string dataId) const;
-
-        int Remove(std::string dataId);
 
         void Print(bool printIds = false) const;
 

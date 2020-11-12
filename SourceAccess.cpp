@@ -5,83 +5,37 @@
 
 #include "SourceAccess.h"
 
-void SourceAccess::Open(std::string fileName) {
-
-    filePath = PARENT_DIRECTORY + fileName;
-
-    if(filePath.extension() == "") {
-        filePath += ".txt";
-    }
-
+int SourceAccess::Open(std::string fileName) {
     std::ifstream inFile;
     unsigned int size = 0;
     DataPoint newData;
+    fs::path newFilePath = PARENT_DIRECTORY + fileName;
+
+    if(newFilePath.extension() == "") {
+        newFilePath += ".txt";
+    }
     
-    if(fs::exists(filePath) == true) {
-
-        inFile.open(filePath);
-        if(inFile.is_open() == false) {
-            throw -1;
-        }
-
-        inFile >> size;
-        inFile.ignore();
-        dataPoints.resize(size);
-
-        for(unsigned int i = 0; i < size; i++) {
-            
-            inFile >> newData.id;
-            inFile.ignore();
-            getline(inFile, newData.value);
-
-            dataPoints.at(i) = newData;
-        }
-
-        inFile.close();
+    inFile.open(newFilePath);
+    if(inFile.is_open() == false) {
+        return -1;
     }
+    filePath = newFilePath;
 
-    else {//If the file doesn't exist, try to create it
+    inFile >> size;
+    inFile.ignore();
+    dataPoints.resize(size);
 
-        fs::create_directories(filePath.parent_path());
+    for(unsigned int i = 0; i < size; i++) {
         
-        std::ofstream tempStream;
-        tempStream.open(filePath);
-        if(tempStream.is_open() == false) {//If it fails again throw an error
-            throw "File creation failed";
-        }
-        tempStream << 0 << std::endl;
-        tempStream.close();
+        inFile >> newData.id;
+        inFile.ignore();
+        getline(inFile, newData.value);
 
-        dataPoints.resize(0);
-    }
-}
-
-void SourceAccess::Save() const {
-    std::ofstream outFile;
-
-    outFile.open(filePath);
-    if(outFile.is_open() == false) {
-        throw "File creation failed";
+        dataPoints.at(i) = newData;
     }
 
-    outFile << dataPoints.size() << std::endl;
-
-    for(DataPoint data : dataPoints) {
-        outFile << data.id << " " << data.value << std::endl;
-    }
-}
-
-void SourceAccess::SetValue(std::string dataId, std::string dataValue) {
-    int index = IndexFromId(dataId);
-    if(index == -1) {//IndexFromId returns -1 if a data point was not found
-        DataPoint newDataPoint;
-        newDataPoint.id = dataId;
-        newDataPoint.value = dataValue;
-        dataPoints.push_back(newDataPoint);
-    }
-    else {
-        dataPoints.at(index).value = dataValue;
-    }
+    inFile.close();
+    return 0;
 }
 
 std::string SourceAccess::GetValue(std::string dataId) const {
@@ -89,16 +43,7 @@ std::string SourceAccess::GetValue(std::string dataId) const {
     if(index == -1) {//IndexFromId returns -1 if a data point was not found
         return "ERROR: No data point of ID [" + dataId + "] was found in " + filePath.generic_string();
     }
-    return dataPoints.at(IndexFromId(dataId)).value;
-}
-
-int SourceAccess::Remove(std::string dataId) {
-    int index = IndexFromId(dataId);
-    if(index == -1) {
-        return -1;
-    }
-    dataPoints.erase(dataPoints.begin() + index);
-    return 0;
+    return dataPoints.at(index).value;
 }
 
 void SourceAccess::Print(bool printIds) const {
