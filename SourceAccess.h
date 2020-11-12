@@ -12,9 +12,9 @@ namespace fs = std::experimental::filesystem;
 class SourceAccess {
     public:
 
-        int Open(std::string fileName);
+        int Open(const std::string& fileName);
 
-        std::string GetValue(std::string dataId) const;
+        std::string GetValue(const std::string& dataId) const;
 
         void Print(bool printIds = false) const;
 
@@ -33,7 +33,7 @@ class SourceAccess {
 
         std::vector<DataPoint> dataPoints;
 
-        int IndexFromId(std::string dataId) const;
+        int IndexFromId(const std::string& dataId) const;
 };
 
 #endif

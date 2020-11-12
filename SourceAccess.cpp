@@ -5,7 +5,7 @@
 
 #include "SourceAccess.h"
 
-int SourceAccess::Open(std::string fileName) {
+int SourceAccess::Open(const std::string& fileName) {
     std::ifstream inFile;
     unsigned int size = 0;
     DataPoint newData;
@@ -38,7 +38,7 @@ int SourceAccess::Open(std::string fileName) {
     return 0;
 }
 
-std::string SourceAccess::GetValue(std::string dataId) const {
+std::string SourceAccess::GetValue(const std::string& dataId) const {
     int index = IndexFromId(dataId);
     if(index == -1) {//IndexFromId returns -1 if a data point was not found
         return "ERROR: No data point of ID [" + dataId + "] was found in " + filePath.generic_string();
@@ -59,7 +59,7 @@ int SourceAccess::Size() const {
     return dataPoints.size();
 }
 
-int SourceAccess::IndexFromId(std::string dataId) const {
+int SourceAccess::IndexFromId(const std::string& dataId) const {
     for(unsigned int i = 0; i < dataPoints.size(); ++i) {
         if(dataPoints.at(i).id == dataId) {
             return i;
